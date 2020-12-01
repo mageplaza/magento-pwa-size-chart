@@ -21,7 +21,6 @@ import {
 import SizeChart from './SizeChart';
 import {AppBar,Tabs,Tab, Box, Typography} from '@material-ui/core'
 const Options = React.lazy(() => import('@magento/venia-ui/lib/components/ProductOptions'));
-
 // Correlate a GQL error message to a field. GQL could return a longer error
 // string but it may contain contextual info such as product id. We can use
 // parts of the string to check for which field to apply the error.
@@ -30,15 +29,12 @@ const ERROR_MESSAGE_TO_FIELD_MAPPING = {
     'Product that you are trying to add is not available.': 'quantity',
     "The product that was requested doesn't exist.": 'quantity'
 };
-
 // Field level error messages for rendering.
 const ERROR_FIELD_TO_MESSAGE_MAPPING = {
     quantity: 'The requested quantity is not available.'
 };
-
 const ProductFullDetail = props => {
     const { product } = props;
-
     const talonProps = useProductFullDetail({
         addConfigurableProductToCartMutation: ADD_CONFIGURABLE_MUTATION,
         addSimpleProductToCartMutation: ADD_SIMPLE_MUTATION,
