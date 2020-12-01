@@ -1,12 +1,10 @@
 import React, { Fragment, Suspense, useState } from 'react';
-
+import PropTypes from 'prop-types';
 import { arrayOf, bool, number, shape, string } from 'prop-types';
 import { Form } from 'informed';
-
 import { Price } from '@magento/peregrine';
 import { useProductFullDetail } from '@magento/peregrine/lib/talons/ProductFullDetail/useProductFullDetail';
 import { isProductConfigurable } from '@magento/peregrine/lib/util/isProductConfigurable';
-
 import { mergeClasses } from '@magento/venia-ui/lib/classify';
 import Breadcrumbs from '@magento/venia-ui/lib/components/Breadcrumbs';
 import Button from '@magento/venia-ui/lib/components/Button';
@@ -15,20 +13,14 @@ import FormError from '@magento/venia-ui/lib/components/FormError';
 import { fullPageLoadingIndicator } from '@magento/venia-ui/lib/components/LoadingIndicator';
 import Quantity from '@magento/venia-ui/lib/components/ProductQuantity';
 import RichText from '@magento/venia-ui/lib/components/RichText';
-
 import defaultClasses from '@magento/venia-ui/lib/components/ProductFullDetail/productFullDetail.css';
 import {
     ADD_CONFIGURABLE_MUTATION,
     ADD_SIMPLE_MUTATION
 } from '@magento/venia-ui/lib/components/ProductFullDetail/productFullDetail.gql';
 import SizeChart from './SizeChart';
-import { useQuery } from '@apollo/client';
-import { ADD_SIZE_CHART } from './productFullDetail.Gql';
-import 'bootstrap/dist/css/bootstrap.css';
-import Tab from 'react-bootstrap/Tab';
-import Tabs from 'react-bootstrap/Tabs';
-
-require('./style.scss');
+import {AppBar,Tabs,Tab, Box, Typography} from '@material-ui/core'
+import { useStyles }from './style.js';
 const Options = React.lazy(() => import('@magento/venia-ui/lib/components/ProductOptions'));
 
 // Correlate a GQL error message to a field. GQL could return a longer error
@@ -67,7 +59,7 @@ const ProductFullDetail = props => {
     } = talonProps;
 
     const classes = mergeClasses(defaultClasses, props.classes);
-
+    
     const options = isProductConfigurable(product) ? (
         <Suspense fallback={fullPageLoadingIndicator}>
             <Options
@@ -125,13 +117,43 @@ const ProductFullDetail = props => {
             ]);
         }
     }
-    const {data,loading,error } = useQuery(ADD_SIZE_CHART,{
-        variables:{
-            urlKey: "salt-water-magazine"
-        }
-    });
-    const arrSizeChart = data.productDetail.items[0].mp_sizeChart;
-    const [key, setKey] = useState('description');
+   console.log(props.product.mp_sizeChart);
+    const sizeChart = props.product.mp_sizeChart;
+    const [value, setValue] = useState(0);
+    function TabPanel(props) {
+        const { children, value, index, ...other } = props;
+      
+        return (
+          <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
+          >
+            {value === index && (
+              <Box p={3}>
+                <Typography>{children}</Typography>
+              </Box>
+            )}
+          </div>
+        );
+    }
+    TabPanel.propTypes = {
+        children: PropTypes.node,
+        index: PropTypes.any.isRequired,
+        value: PropTypes.any.isRequired,
+    };
+    function a11yProps(index) {
+    return {
+        id: `simple-tab-${index}`,
+        'aria-controls': `simple-tabpanel-${index}`,
+    };
+    }
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+    
     return (
         <Fragment>
             {breadcrumbs}
@@ -174,22 +196,27 @@ const ProductFullDetail = props => {
                         Add to Cart
                     </Button>
                 </section>
-                <section className={`${classes.description} description`}>
-                    <Tabs activeKey={key} onSelect={k=>setKey(k)} defaultActiveKey="description" id="controlled-tab-example">
-                        <Tab eventKey="description" title="DESCRIPTION">
-                        <h2 variant="dark" className={classes.descriptionTitle}>
-                            Product Description
-                        </h2>
+                <section className={classes.description}>
+                    <AppBar position="static" color="default">
+                        <Tabs value={value} onChange={handleChange} variant="fullWidth">
+                            <Tab  label="Description" {...a11yProps(0)} />
+                            <Tab label="Sku" {...a11yProps(1)} />
+                            <Tab label="Size Chart" {...a11yProps(2)} />
+                        </Tabs>
+                    </AppBar>
+                    
+                    <TabPanel value={value} index={0}>
+                        <h2 variant="dark" className={classes.descriptionTitle}>Product Description</h2>
                         <RichText content={productDetails.description} />
-                        </Tab>
-                        <Tab eventKey="sku" title="SKU">
-                            <h2 className={classes.detailsTitle}>SKU</h2>
-                            <strong>{productDetails.sku}</strong>
-                        </Tab>
-                        <Tab eventKey="sizechart" title="SIZECHART">
-                            <SizeChart sizeChart={arrSizeChart}/>
-                        </Tab>
-                    </Tabs>
+                    </TabPanel>
+                    <TabPanel value={value} index={1}>
+                        <h2 className={classes.detailsTitle}>SKU</h2>
+                        <strong>{productDetails.sku}</strong>
+                    </TabPanel>
+                    <TabPanel value={value} index={2}>
+                        <SizeChart sizeChart={sizeChart}/>
+                    </TabPanel>
+                   
                 </section>
             </Form>
         </Fragment>
