@@ -20,9 +20,7 @@ import {
 } from '@magento/venia-ui/lib/components/ProductFullDetail/productFullDetail.gql';
 import SizeChart from './SizeChart';
 import {AppBar,Tabs,Tab, Box, Typography} from '@material-ui/core'
-import { useStyles }from './style.js';
 const Options = React.lazy(() => import('@magento/venia-ui/lib/components/ProductOptions'));
-
 // Correlate a GQL error message to a field. GQL could return a longer error
 // string but it may contain contextual info such as product id. We can use
 // parts of the string to check for which field to apply the error.
@@ -117,12 +115,11 @@ const ProductFullDetail = props => {
             ]);
         }
     }
-   console.log(props.product.mp_sizeChart);
+   
     const sizeChart = props.product.mp_sizeChart;
     const [value, setValue] = useState(0);
     function TabPanel(props) {
         const { children, value, index, ...other } = props;
-      
         return (
           <div
             role="tabpanel"
@@ -216,7 +213,6 @@ const ProductFullDetail = props => {
                     <TabPanel value={value} index={2}>
                         <SizeChart sizeChart={sizeChart}/>
                     </TabPanel>
-                   
                 </section>
             </Form>
         </Fragment>
