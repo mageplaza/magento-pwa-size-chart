@@ -1,4 +1,4 @@
-# SizeChart module for Magento PWA Studio
+# Magento PWA Size Chart package
 
 This module acts as an add-on for [Mageplaza's SizeChart extension](https://www.mageplaza.com/magento-2-size-chart/) to make it work with Magento PWA Studio.
 
